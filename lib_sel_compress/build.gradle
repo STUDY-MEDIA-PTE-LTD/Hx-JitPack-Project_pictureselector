@@ -4,7 +4,6 @@ apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion AppVersions.compileSdkVersion
-    buildToolsVersion AppVersions.buildToolsVersion
 
     defaultConfig {
         minSdkVersion AppVersions.minSdkVersion

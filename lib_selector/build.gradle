@@ -3,7 +3,6 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion AppVersions.compileSdkVersion
-    buildToolsVersion AppVersions.buildToolsVersion
     defaultConfig {
         minSdkVersion AppVersions.minSdkVersion
         targetSdkVersion AppVersions.targetSdkVersion
