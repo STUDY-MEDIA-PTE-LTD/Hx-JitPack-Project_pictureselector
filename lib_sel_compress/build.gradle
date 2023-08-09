@@ -1,5 +1,4 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'maven-publish'
 
 
@@ -29,10 +28,6 @@ android {
         }
     }
 
-}
-
-ext {
-    PUBLISH_ARTIFACT_ID = "compress"
 }
 
 //配置
