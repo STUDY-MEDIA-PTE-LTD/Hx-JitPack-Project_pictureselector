@@ -13,13 +13,12 @@ task generateSourcesJar(type: Jar) {
 def libName = "compress"
 
 android {
-    compileSdkVersion AppVersions.compileSdkVersion
-
+    compileSdkVersion 33
     defaultConfig {
-        minSdkVersion AppVersions.minSdkVersion
-        targetSdkVersion AppVersions.targetSdkVersion
-        versionCode AppVersions.versionCode
-        versionName AppVersions.versionName
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0.1"
     }
     buildTypes {
         release {
