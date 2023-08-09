@@ -1,0 +1,44 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'maven-publish'
+
+android {
+    compileSdkVersion AppVersions.compileSdkVersion
+    buildToolsVersion AppVersions.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion AppVersions.minSdkVersion
+        targetSdkVersion AppVersions.targetSdkVersion
+        versionCode AppVersions.versionCode
+        versionName AppVersions.versionName
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+ext {
+    PUBLISH_ARTIFACT_ID = "compress"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
+
+                // You can then customize attributes of the publication as shown below.
+                groupId = 'com.xiaoxing.test'
+                artifactId = 'chen'
+                version = '1.2.0'
+            }
+        }
+    }
+}
+
+dependencies {}

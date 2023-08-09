@@ -1,0 +1,5 @@
+rootProject.name = "Hx-JitPack-Project"
+include ':app'
+include ':lib_ucrop'
+include ':lib_selector'
+include ':lib_sel_compress'
