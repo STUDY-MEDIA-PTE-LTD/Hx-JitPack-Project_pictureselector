@@ -2,6 +2,7 @@ package com.luckyloan.hx_jitpack_project
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.hx.demo.app.R
 
 /**
  *Author: 彭石林
