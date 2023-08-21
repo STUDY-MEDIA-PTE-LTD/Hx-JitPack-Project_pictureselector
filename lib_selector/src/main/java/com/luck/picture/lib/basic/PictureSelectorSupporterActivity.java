@@ -77,8 +77,14 @@ public class PictureSelectorSupporterActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(PictureContextWrapper.wrap(newBase,
-                SelectorProviders.getInstance().getSelectorConfig().language, SelectorProviders.getInstance().getSelectorConfig().defaultLanguage));
+        //先处理判断空指针。避免报错
+        if(SelectorProviders.getInstance().getSelectorConfig() != null){
+            super.attachBaseContext(PictureContextWrapper.wrap(newBase,
+                    SelectorProviders.getInstance().getSelectorConfig().language, SelectorProviders.getInstance().getSelectorConfig().defaultLanguage));
+        }else{
+            super.attachBaseContext(newBase);
+        }
+
     }
 
     @Override
