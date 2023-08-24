@@ -1868,13 +1868,17 @@ public abstract class PictureCommonFragment extends Fragment implements IPicture
 
     @Override
     public void onRecreateEngine() {
-        createImageLoaderEngine();
-        createVideoPlayerEngine();
-        createCompressEngine();
-        createSandboxFileEngine();
-        createLoaderDataEngine();
-        createResultCallbackListener();
-        createLayoutResourceListener();
+        try{
+            createImageLoaderEngine();
+            createVideoPlayerEngine();
+            createCompressEngine();
+            createSandboxFileEngine();
+            createLoaderDataEngine();
+            createResultCallbackListener();
+            createLayoutResourceListener();
+        }catch (Exception e){
+            //处理异常捕获。这里再部分机型上面已经出现配置参数被设置为空指针了
+        }
     }
 
     @Override
