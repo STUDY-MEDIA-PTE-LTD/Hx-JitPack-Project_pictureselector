@@ -167,13 +167,6 @@ class Engine {
                 quality -= 10; // Reduce mass, can be adjusted as needed
                 if (quality < 0) {
                     tagBitmap.recycle();
-//                    tagBitmap.recycle();
-//                    FileOutputStream fos = new FileOutputStream(tagImg);
-//                    fos.write(stream.toByteArray());
-//                    fos.flush();
-//                    fos.close();
-//                    stream.close();
-//                    return tagImg;
                     throw new IOException("Unable to compress image within the desired file size limit.");
                 }
             } else {
