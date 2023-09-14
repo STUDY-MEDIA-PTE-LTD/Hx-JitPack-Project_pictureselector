@@ -66,7 +66,20 @@ class Engine {
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
     }
 
-    File compress() throws IOException {
+    /**
+     *
+     * @param maxWidth  maximum width
+     * @param maxHeight maximum height
+     * @param maxCompressFileSizeBytes  Maximum file size after compression
+     * @throws IOException
+     */
+    File compress(int maxWidth, int maxHeight, long maxCompressFileSizeBytes) throws IOException {
+        if (maxWidth != 0 && maxHeight != 0) {
+            return compressWithMaxDimensions(maxWidth, maxHeight);
+        }
+        if (maxCompressFileSizeBytes != 0) {
+            return compressWithMaxFileSize(maxCompressFileSizeBytes);
+        }
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inSampleSize = computeSize();
 
@@ -87,4 +100,88 @@ class Engine {
 
         return tagImg;
     }
+
+
+    /**
+     * Compress according to maximum width and height restrictions
+     */
+    File compressWithMaxDimensions(int maxWidth, int maxHeight) throws IOException {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = computeSize();
+
+        Bitmap tagBitmap = BitmapFactory.decodeStream(srcImg.open(), null, options);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+        if (Checker.SINGLE.isJPG(srcImg.open())) {
+            tagBitmap = rotatingImage(tagBitmap, Checker.SINGLE.getOrientation(srcImg.open()));
+        }
+
+        // Check if the image dimensions exceed the maximum limits
+        int currentWidth = tagBitmap.getWidth();
+        int currentHeight = tagBitmap.getHeight();
+        while (currentWidth > maxWidth || currentHeight > maxHeight) {
+            // Reduce the quality and compress the image again
+            int quality = 60;  // You can adjust the quality as needed
+            stream.reset();
+            tagBitmap.compress(focusAlpha || tagBitmap.hasAlpha() ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, quality, stream);
+
+            // Calculate the new sample size to further reduce dimensions
+            options.inSampleSize *= 2;
+            tagBitmap = BitmapFactory.decodeStream(srcImg.open(), null, options);
+            currentWidth = tagBitmap.getWidth();
+            currentHeight = tagBitmap.getHeight();
+        }
+
+        tagBitmap.compress(focusAlpha || tagBitmap.hasAlpha() ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, 60, stream);
+        tagBitmap.recycle();
+
+        FileOutputStream fos = new FileOutputStream(tagImg);
+        fos.write(stream.toByteArray());
+        fos.flush();
+        fos.close();
+        stream.close();
+
+        return tagImg;
+    }
+
+    /**
+     * Compress based on maximum file size
+     */
+    File compressWithMaxFileSize(long maxFileSizeBytes) throws IOException {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inSampleSize = computeSize();
+
+        Bitmap tagBitmap = BitmapFactory.decodeStream(srcImg.open(), null, options);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+        if (Checker.SINGLE.isJPG(srcImg.open())) {
+            tagBitmap = rotatingImage(tagBitmap, Checker.SINGLE.getOrientation(srcImg.open()));
+        }
+
+        int quality = 60; // 初始质量
+        boolean compressing = true;
+        while (compressing) {
+            stream.reset();
+            tagBitmap.compress(focusAlpha || tagBitmap.hasAlpha() ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, quality, stream);
+
+            if (stream.size() > maxFileSizeBytes) {
+                // If file size exceeds limit, reduce quality and continue compression
+                quality -= 10; // Reduce mass, can be adjusted as needed
+                if (quality < 0) {
+                    throw new IOException("Unable to compress image within the desired file size limit.");
+                }
+            } else {
+                compressing = false; // File size is within the limit, stop compressing
+            }
+        }
+
+        FileOutputStream fos = new FileOutputStream(tagImg);
+        fos.write(stream.toByteArray());
+        fos.flush();
+        fos.close();
+        stream.close();
+
+        return tagImg;
+    }
+
 }

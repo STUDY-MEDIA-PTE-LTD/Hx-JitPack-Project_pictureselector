@@ -36,7 +36,9 @@ public class Luban implements Handler.Callback {
     private OnNewCompressListener mNewCompressListener;
     private CompressionPredicate mCompressionPredicate;
     private List<InputStreamProvider> mStreamProviders;
-
+    private int maxWidth;
+    private int maxHeight;
+    private long maxCompressFileSizeBytes = 0;
     private Handler mHandler;
 
     private Luban(Builder builder) {
@@ -49,6 +51,9 @@ public class Luban implements Handler.Callback {
         this.mNewCompressListener = builder.mNewCompressListener;
         this.mLeastCompressSize = builder.mLeastCompressSize;
         this.mCompressionPredicate = builder.mCompressionPredicate;
+        this.maxWidth = builder.maxWidth;
+        this.maxHeight = builder.maxHeight;
+        this.maxCompressFileSizeBytes = builder.maxCompressFileSizeBytes;
         mHandler = new Handler(Looper.getMainLooper(), this);
     }
 
@@ -171,7 +176,7 @@ public class Luban implements Handler.Callback {
      */
     private File get(InputStreamProvider input, Context context) throws IOException {
         try {
-            return new Engine(input, getImageCacheFile(context, Checker.SINGLE.extSuffix(input)), focusAlpha).compress();
+            return new Engine(input, getImageCacheFile(context, Checker.SINGLE.extSuffix(input)), focusAlpha).compress(maxWidth, maxHeight, maxCompressFileSizeBytes);
         } finally {
             input.close();
         }
@@ -210,14 +215,14 @@ public class Luban implements Handler.Callback {
         if (mCompressionPredicate != null) {
             if (mCompressionPredicate.apply(source)
                     && Checker.SINGLE.needCompress(mLeastCompressSize, source)) {
-                result = new Engine(path, outFile, focusAlpha).compress();
+                result = new Engine(path, outFile, focusAlpha).compress(maxWidth, maxHeight, maxCompressFileSizeBytes);
             } else {
                 // Ignore compression
                 result = new File(source);
             }
         } else {
             if (Checker.SINGLE.needCompress(mLeastCompressSize, source)) {
-                result = new Engine(path, outFile, focusAlpha).compress();
+                result = new Engine(path, outFile, focusAlpha).compress(maxWidth, maxHeight, maxCompressFileSizeBytes);
             } else {
                 // Ignore compression
                 result = new File(source);
@@ -243,7 +248,7 @@ public class Luban implements Handler.Callback {
                 if (mCompressListener != null) {
                     mCompressListener.onSuccess(msg.arg1, (File) msg.obj);
                 }
-                if (mNewCompressListener !=null) {
+                if (mNewCompressListener != null) {
                     mNewCompressListener.onSuccess(msg.getData().getString(KEY_SOURCE), (File) msg.obj);
                 }
                 break;
@@ -270,6 +275,9 @@ public class Luban implements Handler.Callback {
         private OnNewCompressListener mNewCompressListener;
         private CompressionPredicate mCompressionPredicate;
         private List<InputStreamProvider> mStreamProviders;
+        public int maxWidth;
+        public int maxHeight;
+        public long maxCompressFileSizeBytes;
 
         Builder(Context context) {
             this.context = context;
@@ -303,7 +311,7 @@ public class Luban implements Handler.Callback {
         }
 
         public Builder load(final File file) {
-            load(file,0);
+            load(file, 0);
             return this;
         }
 
@@ -391,6 +399,17 @@ public class Luban implements Handler.Callback {
             return this;
         }
 
+        public Builder setMaxWH(int maxWidth, int maxHeight) {
+            this.maxWidth = maxWidth;
+            this.maxHeight = maxHeight;
+            return this;
+        }
+
+        public Builder setMaxFileSizeBytes(long maxCompressFileSizeBytes) {
+            this.maxCompressFileSizeBytes = maxCompressFileSizeBytes;
+            return this;
+        }
+
         public Builder setCompressListener(OnCompressListener listener) {
             this.mCompressListener = listener;
             return this;
@@ -461,7 +480,7 @@ public class Luban implements Handler.Callback {
             return get(path, 0);
         }
 
-        public File get(final String path,int index) throws IOException {
+        public File get(final String path, int index) throws IOException {
             return build().get(new InputStreamAdapter() {
                 @Override
                 public InputStream openInternal() {
