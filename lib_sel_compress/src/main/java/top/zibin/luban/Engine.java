@@ -67,10 +67,9 @@ class Engine {
     }
 
     /**
-     *
      * @param maxWidth  maximum width
      * @param maxHeight maximum height
-     * @param maxCompressFileSizeBytes  Maximum file size after compression
+     * @param maxCompressFileSizeBytes Maximum file size after compression
      * @throws IOException
      */
     File compress(int maxWidth, int maxHeight, long maxCompressFileSizeBytes) throws IOException {
@@ -163,18 +162,25 @@ class Engine {
         while (compressing) {
             stream.reset();
             tagBitmap.compress(focusAlpha || tagBitmap.hasAlpha() ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG, quality, stream);
-
-            if (stream.size() > maxFileSizeBytes) {
+            if ( stream.size() > maxFileSizeBytes) {
                 // If file size exceeds limit, reduce quality and continue compression
                 quality -= 10; // Reduce mass, can be adjusted as needed
                 if (quality < 0) {
+                    tagBitmap.recycle();
+//                    tagBitmap.recycle();
+//                    FileOutputStream fos = new FileOutputStream(tagImg);
+//                    fos.write(stream.toByteArray());
+//                    fos.flush();
+//                    fos.close();
+//                    stream.close();
+//                    return tagImg;
                     throw new IOException("Unable to compress image within the desired file size limit.");
                 }
             } else {
                 compressing = false; // File size is within the limit, stop compressing
             }
         }
-
+        tagBitmap.recycle();
         FileOutputStream fos = new FileOutputStream(tagImg);
         fos.write(stream.toByteArray());
         fos.flush();
