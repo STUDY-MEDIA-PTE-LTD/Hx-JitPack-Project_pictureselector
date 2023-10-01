@@ -16,6 +16,7 @@
             <option value="$PROJECT_DIR$/lib_sel_compress" />
             <option value="$PROJECT_DIR$/lib_selector" />
             <option value="$PROJECT_DIR$/lib_ucrop" />
+            <option value="$PROJECT_DIR$/library_base_quick_adapter" />
           </set>
         </option>
       </GradleProjectSettings>
