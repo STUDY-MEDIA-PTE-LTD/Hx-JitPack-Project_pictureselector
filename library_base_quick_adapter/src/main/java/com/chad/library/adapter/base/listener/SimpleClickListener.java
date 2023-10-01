@@ -1,8 +1,6 @@
 package com.chad.library.adapter.base.listener;
 
 import android.os.Build;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -17,6 +15,9 @@ import static com.chad.library.adapter.base.BaseQuickAdapter.EMPTY_VIEW;
 import static com.chad.library.adapter.base.BaseQuickAdapter.FOOTER_VIEW;
 import static com.chad.library.adapter.base.BaseQuickAdapter.HEADER_VIEW;
 import static com.chad.library.adapter.base.BaseQuickAdapter.LOADING_VIEW;
+
+import androidx.core.view.GestureDetectorCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by AllenCoder on 2016/8/03.
