@@ -78,6 +78,8 @@ public class OverlayView extends View {
     private OverlayViewChangeListener mCallback;
     private ValueAnimator smoothAnimator;
     private boolean mShouldSetupCropBounds;
+    private boolean mCustomSizeCropEnabled;
+
 
     {
         mTouchPointThreshold = getResources().getDimensionPixelSize(R.dimen.ucrop_default_crop_rect_corner_touch_threshold);
@@ -134,6 +136,10 @@ public class OverlayView extends View {
      */
     public void setFreestyleCropEnabled(boolean freestyleCropEnabled) {
         mFreestyleCropMode = freestyleCropEnabled ? FREESTYLE_CROP_MODE_ENABLE : FREESTYLE_CROP_MODE_DISABLE;
+    }
+
+    public void setCustomSizeCropEnabled(boolean customSizeCropEnabled) {
+        mCustomSizeCropEnabled = customSizeCropEnabled;
     }
 
     @FreestyleMode
@@ -254,12 +260,37 @@ public class OverlayView extends View {
     public void setTargetAspectRatio(final float targetAspectRatio) {
         mTargetAspectRatio = targetAspectRatio;
         if (mThisWidth > 0) {
-            setupCropBounds();
+            if (mCustomSizeCropEnabled) {
+                //自定义大小的裁剪框，目前用于头像的上传
+                setupCustomSizeCropBounds();
+            } else {
+                setupCropBounds();
+            }
             postInvalidate();
         } else {
             mShouldSetupCropBounds = true;
         }
     }
+
+    private int spacing = 150;
+    public void setupCustomSizeCropBounds() {
+
+        int itemW = mThisWidth - (2 * spacing);
+        if (mThisHeight > itemW) {
+            int topDiff = (mThisHeight - itemW) / 2;
+
+            mCropViewRect.set(getPaddingLeft() + spacing, getPaddingTop() + topDiff,
+                    getPaddingLeft() + itemW + spacing, getPaddingTop() + topDiff + itemW);
+
+            if (mCallback != null) {
+                mCallback.onCropRectUpdated(mCropViewRect);
+            }
+            updateGridPoints();
+        } else {
+            setupCropBounds();
+        }
+    }
+
 
     /**
      * This method setups crop bounds rectangles for given aspect ratio and view size.

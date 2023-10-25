@@ -391,6 +391,11 @@ public class UCrop {
 
         public static final String EXTRA_UCROP_ROOT_VIEW_BACKGROUND_COLOR = EXTRA_PREFIX + ".UcropRootViewBackgroundColor";
 
+        /**
+         * 自定义大小的裁剪框，目前用于头像的上传
+         */
+        public static final String EXTRA_CUSTOM_SIZE_CROP = EXTRA_PREFIX + ".CustomSizeCrop";
+
 
         private final Bundle mOptionBundle;
 
@@ -691,6 +696,16 @@ public class UCrop {
         public void setFreeStyleCropEnabled(boolean enabled) {
             mOptionBundle.putBoolean(EXTRA_FREE_STYLE_CROP, enabled);
         }
+
+
+        /**
+         * 自定义大小的裁剪框，目前用于头像的上传
+         * @param enabled
+         */
+        public void setCustomSizeCropEnabled(boolean enabled) {
+            mOptionBundle.putBoolean(EXTRA_CUSTOM_SIZE_CROP, enabled);
+        }
+
 
         /**
          * Pass an ordered list of desired aspect ratios that should be available for a user.
